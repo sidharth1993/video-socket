@@ -50,6 +50,7 @@ io.on("request",(request)=>{
         console.log(`Connection request Accepted for room ${mId} and user ${user}`);
         connection[mId][user].on("message",(message)=>{
             for(let usr in connection[mId]){
+                console.log(`Streaming to ${usr} in room ${mId}`);
                 connection[mId][usr].send({msg:message.utf8Data,users:Object.keys(connection[mId].length)});
             }
         });
