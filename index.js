@@ -49,10 +49,8 @@ io.on("request",(request)=>{
         
         console.log(`Connection request Accepted for room ${mId} and user ${user}`);
         connection[mId][user].on("message",(message)=>{
-            console.log(`Message from user ${user} to room ${mId}`);
             for(let usr in connection[mId]){
-                connection[mId][usr].send(message.utf8Data);
-                console.log(`Sent to user ${usr} in room ${mId}`);
+                connection[mId][usr].send({msg:message.utf8Data,users:Object.keys(connection[mId].length)});
             }
         });
         connection[mId][user].on("close",(a)=>{
