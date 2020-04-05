@@ -12,8 +12,8 @@ app.get('/',(req,res)=>{
 
 http.listen(port,()=>{
     console.log(`Tuned into ${port}`);
-    console.log("Room   |User   |Total in room");
-    console.log("----   |----   |----- -- ----");
+    console.log("Event|Room   |User   |Total in room");
+    console.log("-----|----   |----   |----- -- ----");
 });
 
 const io = new Websocket({
@@ -48,15 +48,19 @@ io.on("request",(request)=>{
             connection[mId][user] = request.accept();
         }
         
-        console.log(`${mId}|${user}(O)|${Object.keys(connection[mId]).length}`);
+        console.log(`Open|${mId}|${user}|${Object.keys(connection[mId]).length}`);
         connection[mId][user].on("message",(message)=>{
+            //console.log(`From|${mId}|${user}|-----`);
             for(let usr in connection[mId]){
-                connection[mId][usr].send(JSON.stringify({msg:message.utf8Data,usr:Object.keys(connection[mId]).length}));
+                //console.log(`Send|${mId}|${usr}|-----`);
+                if(user !== usr){
+                    connection[mId][usr].send(message.utf8Data);
+                }
             }
         });
         connection[mId][user].on("close",(a)=>{
             delete connection[mId][user];
-            console.log(`${mId}|${user}(C)|${Object.keys(connection[mId]).length}`);
+            console.log(`Close|${mId}|${user}|${Object.keys(connection[mId]).length} --> ${a}`);
         })
     }else{
         request.reject();
