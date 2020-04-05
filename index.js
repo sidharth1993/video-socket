@@ -11,7 +11,9 @@ app.get('/',(req,res)=>{
 });
 
 http.listen(port,()=>{
-    console.log(`Tuned into ${port}`)
+    console.log(`Tuned into ${port}`);
+    console.log("Room   |User   |Total in room");
+    console.log("----   |----   |----- -- ----");
 });
 
 const io = new Websocket({
@@ -20,7 +22,6 @@ const io = new Websocket({
 });
 
 const originValidation = (origin)=>{
-    console.log(`Validating ${origin}`);
     if(origin.indexOf('localhost') < 0){
         return false
     }
@@ -47,15 +48,15 @@ io.on("request",(request)=>{
             connection[mId][user] = request.accept();
         }
         
-        console.log(`Connection request Accepted for room ${mId} and user ${user}`);
+        console.log(`${mId}|${user}(O)|${Object.keys(connection[mId]).length}`);
         connection[mId][user].on("message",(message)=>{
             for(let usr in connection[mId]){
-                console.log(`Streaming to ${usr} in room ${mId}`);
-                connection[mId][usr].send({msg:message.utf8Data,users:Object.keys(connection[mId].length)});
+                connection[mId][usr].send(JSON.stringify({msg:message.utf8Data,usr:Object.keys(connection[mId]).length}));
             }
         });
         connection[mId][user].on("close",(a)=>{
-            console.log(`Connection closed with ${user} in room ${mId} --> ${a}`);
+            delete connection[mId][user];
+            console.log(`${mId}|${user}(C)|${Object.keys(connection[mId]).length}`);
         })
     }else{
         request.reject();
