@@ -22,7 +22,7 @@ const io = new Websocket({
 });
 
 const originValidation = (origin)=>{
-    if(origin.indexOf('localhost') < 0){
+    if(origin.indexOf('sidharth1993') < 0 && origin.indexOf('localhost') < 0){
         return false
     }
     return true;
